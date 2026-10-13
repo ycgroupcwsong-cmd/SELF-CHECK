@@ -12,33 +12,479 @@
 </head>
 <body>
 <div class="quote-app">
-<section class="hero"><div class="eyebrow">NEXTWOOD CNC ROUTER · SMART QUOTE</div><h1>내 작업에 맞는 CNC,<br>1분 모의 견적</h1><p>가공 크기와 작업 방식, 생산량을 선택하면 넥스트우드 CNC 라우터 라인업 중 적합한 장비와 필요한 옵션을 자동으로 구성합니다.</p></section>
+<section class="hero"><div class="eyebrow">NEXTWOOD CNC · SMART QUOTE</div><h1>내 작업에 맞는 CNC,<br>1분 모의 견적</h1><p>장비 종류와 가공 크기, 작업 방식, 생산량을 선택하면 넥스트우드 CNC 라우터·CNC 목선반 라인업 중 적합한 장비와 필요한 옵션을 자동으로 구성합니다.</p></section>
 <div class="layout">
 <section class="panel">
-<div class="step"><div class="step-head"><div class="step-no">1</div><div><h2>가장 큰 가공물 크기</h2><p>평소 작업하는 제품 중 가장 큰 크기를 입력하세요.</p></div></div><div class="grid2"><div class="field"><label>가로 X (mm)</label><input id="sizeX" type="number" value="600" min="1"></div><div class="field"><label>세로 Y (mm)</label><input id="sizeY" type="number" value="900" min="1"></div></div></div>
-<div class="step"><div class="step-head"><div class="step-no">2</div><div><h2>주요 작업</h2><p>가장 비중이 높은 가공을 하나 선택하세요.</p></div></div><div class="choice-grid"><label class="choice"><input type="radio" name="job" value="small" checked><span>소품·샘플·소형 부품</span></label><label class="choice"><input type="radio" name="job" value="furniture"><span>가구·판재 가공</span></label><label class="choice"><input type="radio" name="job" value="relief"><span>부조·3D 조각·아트월</span></label><label class="choice"><input type="radio" name="job" value="sign"><span>간판·사인·인테리어</span></label></div></div>
-<div class="step"><div class="step-head"><div class="step-no">3</div><div><h2>생산량과 운용 방식</h2><p>자동 공구교환과 고출력 장비 필요성을 판단합니다.</p></div></div><div class="grid2"><div class="field"><label>예상 운용 빈도</label><select id="production"><option value="low">가끔 사용 / 교육·샘플</option><option value="medium" selected>주 3~5일 / 일반 생산</option><option value="high">매일 / 반복 생산</option></select></div><div class="field"><label>작업 난이도</label><select id="complexity"><option value="2d">2D 절단·포켓 중심</option><option value="mixed" selected>2D + 3D 혼합</option><option value="3d">3D 곡면·부조 비중 높음</option></select></div></div></div>
-<div class="step"><div class="step-head"><div class="step-no">4</div><div><h2>추가 구성</h2><p>필요한 소프트웨어와 교육·옵션을 함께 구성할 수 있습니다.</p></div></div><div class="choice-grid"><label class="choice"><input type="checkbox" id="software"><span>CAD/CAM 소프트웨어 필요</span></label><label class="choice"><input type="checkbox" id="education"><span>디지털 목공 교육 필요</span></label><label class="choice"><input type="checkbox" id="rotary"><span>A축 로터리 옵션 검토</span></label><label class="choice"><input type="checkbox" id="support"><span>지원사업 도입 상담</span></label></div><div class="note">※ 실제 소프트웨어 종류와 라이선스, 교육 방식, A축 구성은 가공 제품과 사용 환경 확인 후 확정하는 것을 권장합니다.</div></div>
-<div class="action-row"><button class="btn secondary" type="button" id="resetBtn">초기화</button><button class="btn primary" type="button" id="calcBtn">모의 견적 만들기</button></div>
+
+<div class="step">
+  <div class="step-head">
+    <div class="step-no">1</div>
+    <div>
+      <h2>장비 종류</h2>
+      <p>제작하려는 제품 형태에 맞는 CNC 장비군을 먼저 선택하세요.</p>
+    </div>
+  </div>
+  <div class="choice-grid">
+    <label class="choice">
+      <input type="radio" name="machineType" value="router" checked>
+      <span>CNC 라우터 · 판재/조각 가공</span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="machineType" value="lathe">
+      <span>CNC 목선반 · 원통/회전 가공</span>
+    </label>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-head">
+    <div class="step-no">2</div>
+    <div>
+      <h2 id="sizeTitle">가장 큰 가공물 크기</h2>
+      <p id="sizeHelp">평소 작업하는 제품 중 가장 큰 크기를 입력하세요.</p>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="field">
+      <label id="sizeXLabel">가로 X (mm)</label>
+      <input id="sizeX" type="number" value="600" min="1">
+    </div>
+    <div class="field">
+      <label id="sizeYLabel">세로 Y (mm)</label>
+      <input id="sizeY" type="number" value="900" min="1">
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-head">
+    <div class="step-no">3</div>
+    <div>
+      <h2>주요 작업</h2>
+      <p>가장 비중이 높은 가공을 하나 선택하세요.</p>
+    </div>
+  </div>
+
+  <div class="choice-grid" id="routerJobs">
+    <label class="choice">
+      <input type="radio" name="job" value="small" checked>
+      <span>소품·샘플·소형 부품</span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="job" value="furniture">
+      <span>가구·판재 가공</span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="job" value="relief">
+      <span>부조·3D 조각·아트월</span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="job" value="sign">
+      <span>간판·사인·인테리어</span>
+    </label>
+  </div>
+
+  <div class="choice-grid" id="latheJobs" style="display:none">
+    <label class="choice">
+      <input type="radio" name="job" value="round">
+      <span>단순 원통·원형 부품</span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="job" value="leg">
+      <span>가구 다리·기둥 제작</span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="job" value="multi">
+      <span>다공정·자동 공구교환</span>
+    </label>
+    <label class="choice">
+      <input type="radio" name="job" value="complex">
+      <span>복합 형상·고난도 가공</span>
+    </label>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-head">
+    <div class="step-no">4</div>
+    <div>
+      <h2>생산량과 운용 방식</h2>
+      <p>장비 축 구성과 자동화 수준을 판단합니다.</p>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="field">
+      <label>예상 운용 빈도</label>
+      <select id="production">
+        <option value="low">가끔 사용 / 교육·샘플</option>
+        <option value="medium" selected>주 3~5일 / 일반 생산</option>
+        <option value="high">매일 / 반복 생산</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>작업 난이도</label>
+      <select id="complexity">
+        <option value="2d">단순 형상 / 기본 가공</option>
+        <option value="mixed" selected>일반 + 복합 작업 혼합</option>
+        <option value="3d">복잡 형상 / 고난도 가공</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<div class="step">
+  <div class="step-head">
+    <div class="step-no">5</div>
+    <div>
+      <h2>추가 구성</h2>
+      <p>필요한 소프트웨어와 교육·옵션을 함께 구성할 수 있습니다.</p>
+    </div>
+  </div>
+
+  <div class="choice-grid">
+    <label class="choice">
+      <input type="checkbox" id="software">
+      <span>CAD/CAM 소프트웨어 필요</span>
+    </label>
+    <label class="choice">
+      <input type="checkbox" id="education">
+      <span>디지털 목공 교육 필요</span>
+    </label>
+    <label class="choice" id="rotaryChoice">
+      <input type="checkbox" id="rotary">
+      <span>A축 로터리 옵션 검토</span>
+    </label>
+    <label class="choice">
+      <input type="checkbox" id="support">
+      <span>지원사업 도입 상담</span>
+    </label>
+  </div>
+
+  <div class="note" id="optionNote">
+    ※ 실제 소프트웨어 종류와 라이선스, 교육 방식, A축 구성은 가공 제품과 사용 환경 확인 후 확정하는 것을 권장합니다.
+  </div>
+</div>
+
+<div class="action-row">
+  <button class="btn secondary" type="button" id="resetBtn">초기화</button>
+  <button class="btn primary" type="button" id="calcBtn">모의 견적 만들기</button>
+</div>
 </section>
+
 <aside class="panel sticky" id="resultPanel"><div class="empty"><div><strong>조건을 입력해 주세요.</strong>입력한 작업 조건에 맞춰<br>장비와 옵션 구성을 추천합니다.</div></div></aside>
 </div></div>
 <script>
-const PRODUCTS={
- atc6090a:{id:"atc6090a",name:"Smartware ATC 6090A",label:"MINI CNC",price:null,url:"https://smartware.kr/product/498c417e-7e25-4170-a48b-7a4079631a56-14-15-16",reasons:["소형 목재 가공","목공 부조","가구 부품","사인·간판"]},
- atc6090_5:{id:"atc6090_5",name:"탁상용 CNC 조각기 (ATC)",label:"ATC 6090 · 2.2kW",price:null,url:"https://nextwood.co.kr/product/atc6090-5",reasons:["600 × 900 작업영역","2.2kW 스핀들","6구 ATC","소형 제작"]},
- atc6090_4:{id:"atc6090_4",name:"소형 CNC 라우터 (ATC)",label:"ATC 6090 · 4.5kW",price:null,url:"https://nextwood.co.kr/product/atc6090-4",reasons:["600 × 900 작업영역","4.5kW 스핀들","Yaskawa Servo","6구 ATC"]},
- atc1325:{id:"atc1325",name:"3축 CNC 라우터 (ATC)",label:"ATC 1325",price:35000000,url:"https://nextwood.co.kr/product/atc1325",reasons:["대형 판재 가공","가구 부품","자동 공구 교체","반복 생산"]}
+const PRODUCTS = {
+  atc6090a:{
+    id:"atc6090a",
+    type:"router",
+    name:"Smartware ATC 6090A",
+    label:"MINI CNC ROUTER",
+    price:null,
+    url:"https://smartware.kr/product/498c417e-7e25-4170-a48b-7a4079631a56-14-15-16",
+    reasons:["소형 목재 가공","목공 부조","가구 부품","사인·간판"]
+  },
+  atc6090_5:{
+    id:"atc6090_5",
+    type:"router",
+    name:"탁상용 CNC 조각기 (ATC)",
+    label:"ATC 6090 · 2.2kW",
+    price:null,
+    url:"https://nextwood.co.kr/product/atc6090-5",
+    reasons:["600 × 900 작업영역","2.2kW 스핀들","6구 ATC","소형 제작"]
+  },
+  atc6090_4:{
+    id:"atc6090_4",
+    type:"router",
+    name:"소형 CNC 라우터 (ATC)",
+    label:"ATC 6090 · 4.5kW",
+    price:null,
+    url:"https://nextwood.co.kr/product/atc6090-4",
+    reasons:["600 × 900 작업영역","4.5kW 스핀들","Yaskawa Servo","6구 ATC"]
+  },
+  atc1325:{
+    id:"atc1325",
+    type:"router",
+    name:"3축 CNC 라우터 (ATC)",
+    label:"ATC 1325",
+    price:35000000,
+    url:"https://nextwood.co.kr/product/atc1325",
+    reasons:["대형 판재 가공","가구 부품","자동 공구 교체","반복 생산"]
+  },
+
+  lathe2:{
+    id:"lathe2",
+    type:"lathe",
+    name:"SMARTWARE 2축 CNC 목선반",
+    label:"CNC WOOD LATHE · 2AXIS",
+    price:null,
+    url:"#",
+    reasons:["L 1,200 × D 300","주모터 5.5kW","목재 원통 부품","가구 다리 제작"]
+  },
+  lathe4:{
+    id:"lathe4",
+    type:"lathe",
+    name:"SMARTWARE 4축 CNC 목선반",
+    label:"CNC WOOD LATHE · 4AXIS",
+    price:null,
+    url:"#",
+    reasons:["L 1,200 × D 300","5개 공구 자동 교환","자동 보정","WEIHONG 컨트롤러"]
+  },
+  lathe5:{
+    id:"lathe5",
+    type:"lathe",
+    name:"SMARTWARE 5축 CNC 목선반",
+    label:"CNC WOOD LATHE · 5AXIS",
+    price:null,
+    url:"#",
+    reasons:["L 1,500 × D 300","9.0kW","최대 18,000rpm","고난도 복합 가공"]
+  }
 };
-const OPTION_PRICES={software:null,education:null,rotary:null,support:0};
-const won=n=>n==null?"상담 필요":n.toLocaleString("ko-KR")+"원";
-function radioValue(name){const el=document.querySelector(`input[name="${name}"]:checked`);return el?el.value:""}
-function recommend(){const x=Number(document.getElementById("sizeX").value||0),y=Number(document.getElementById("sizeY").value||0),maxSide=Math.max(x,y),minSide=Math.min(x,y),job=radioValue("job"),production=document.getElementById("production").value,complexity=document.getElementById("complexity").value;let product,why=[];if(maxSide>900||minSide>600){product=PRODUCTS.atc1325;why.push("600×900mm보다 큰 가공물")}else if(production==="high"||job==="furniture"){product=PRODUCTS.atc6090_4;why.push("생산성과 반복가공 비중")}else if(complexity==="3d"||job==="relief"){product=PRODUCTS.atc6090_4;why.push("3D·부조 가공 비중")}else if(production==="medium"||complexity==="mixed"){product=PRODUCTS.atc6090_5;why.push("소형 작업 + ATC 활용")}else{product=PRODUCTS.atc6090a;why.push("소형·샘플 중심 운용")}if(product.id!=="atc1325"&&x<=600&&y<=900)why.push("600×900mm 범위");if(production==="high")why.push("상시·반복 생산");if(complexity==="3d")why.push("3D 곡면 가공");if(job==="sign")why.push("사인·인테리어 제작");return{product,why,x,y,job,production,complexity}}
-function optionRows(){const rows=[];if(document.getElementById("software").checked)rows.push({name:"CAD/CAM 소프트웨어",price:OPTION_PRICES.software});if(document.getElementById("education").checked)rows.push({name:"디지털 목공 교육",price:OPTION_PRICES.education});if(document.getElementById("rotary").checked)rows.push({name:"A축 로터리 옵션",price:OPTION_PRICES.rotary});if(document.getElementById("support").checked)rows.push({name:"지원사업 도입 상담",price:OPTION_PRICES.support});return rows}
-function textJob(v){return({small:"소품·샘플·소형 부품",furniture:"가구·판재 가공",relief:"부조·3D 조각·아트월",sign:"간판·사인·인테리어"})[v]||"-"}
-function textProduction(v){return({low:"교육·샘플 중심",medium:"일반 생산",high:"상시·반복 생산"})[v]||"-"}
-function render(){const r=recommend(),opts=optionRows(),p=r.product,knownPrices=[p.price,...opts.map(o=>o.price)].filter(v=>typeof v==="number"),hasUnknown=[p.price,...opts.map(o=>o.price)].some(v=>v===null),subtotal=knownPrices.reduce((a,b)=>a+b,0);document.getElementById("resultPanel").innerHTML=`<div class="result-head"><h2>모의 견적 결과</h2><div class="status">추천 완료</div></div><div class="machine-card"><small>${p.label}</small><h3>${p.name}</h3><p>입력한 가공 조건을 기준으로 가장 먼저 검토할 장비입니다.</p><div class="reason-list">${[...p.reasons,...r.why].slice(0,6).map(v=>`<span>${v}</span>`).join("")}</div></div><div class="summary"><div class="summary-row"><span>입력 가공 크기</span><strong>${r.x.toLocaleString()} × ${r.y.toLocaleString()} mm</strong></div><div class="summary-row"><span>주요 작업</span><strong>${textJob(r.job)}</strong></div><div class="summary-row"><span>운용 목적</span><strong>${textProduction(r.production)}</strong></div><div class="summary-row"><span>추가 구성</span><strong>${opts.length?opts.map(o=>o.name).join(" · "):"기본 장비 구성"}</strong></div></div><div class="total"><div class="total-label"><span>현재 확인 가능한 예상금액</span><strong>VAT 별도 기준</strong></div><div class="total-price">${subtotal?won(subtotal):"가격 상담 필요"}</div><small>${hasUnknown?"선택 구성 중 공개 판매가가 없는 항목은 최종 상담 시 금액이 추가됩니다.":"선택한 공개 가격 기준 단순 합산 금액입니다."}</small></div><div class="quote-lines"><div class="quote-line"><b>${p.name}</b><em>${won(p.price)}</em></div>${opts.map(o=>`<div class="quote-line"><b>${o.name}</b><em>${o.price===0?"상담 포함":won(o.price)}</em></div>`).join("")}</div><div class="warning">본 결과는 제품 선택을 돕기 위한 모의 견적입니다. 실제 견적은 소재, 가공물 크기, 전원 환경, 집진·진공 구성, 설치 위치, 운송 및 소프트웨어 라이선스에 따라 달라질 수 있습니다.</div><div class="product-links"><a class="product-link" href="${p.url}" target="_blank" rel="noopener">추천 장비 상세 보기</a><a class="product-link main" href="https://wkf.ms/3Jlx9FV" target="_blank" rel="noopener">실제 견적 문의하기</a></div>`}
-document.getElementById("calcBtn").addEventListener("click",render);document.getElementById("resetBtn").addEventListener("click",()=>{document.getElementById("sizeX").value=600;document.getElementById("sizeY").value=900;document.querySelector('input[name="job"][value="small"]').checked=true;document.getElementById("production").value="medium";document.getElementById("complexity").value="mixed";["software","education","rotary","support"].forEach(id=>document.getElementById(id).checked=false);document.getElementById("resultPanel").innerHTML='<div class="empty"><div><strong>조건을 입력해 주세요.</strong>입력한 작업 조건에 맞춰<br>장비와 옵션 구성을 추천합니다.</div></div>'});document.querySelectorAll("input,select").forEach(el=>el.addEventListener("change",()=>{if(!document.querySelector("#resultPanel .empty"))render()}));
+
+const OPTION_PRICES = {
+  software:null,
+  education:null,
+  rotary:null,
+  support:0
+};
+
+const won = n => n == null ? "상담 필요" : n.toLocaleString("ko-KR")+"원";
+
+function radioValue(name){
+  const el=document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : "";
+}
+
+function updateMachineUI(){
+  const type=radioValue("machineType");
+  const isLathe=type==="lathe";
+
+  document.getElementById("routerJobs").style.display=isLathe ? "none" : "grid";
+  document.getElementById("latheJobs").style.display=isLathe ? "grid" : "none";
+  document.getElementById("rotaryChoice").style.display=isLathe ? "none" : "block";
+
+  if(isLathe){
+    document.getElementById("sizeTitle").textContent="가공할 목재의 최대 크기";
+    document.getElementById("sizeHelp").textContent="최대 제품 길이와 지름을 입력하세요.";
+    document.getElementById("sizeXLabel").textContent="제품 길이 L (mm)";
+    document.getElementById("sizeYLabel").textContent="제품 지름 D (mm)";
+    document.getElementById("sizeX").value=1200;
+    document.getElementById("sizeY").value=300;
+    document.querySelector('input[name="job"][value="leg"]').checked=true;
+    document.getElementById("rotary").checked=false;
+    document.getElementById("optionNote").textContent="※ 목선반은 제품 형상, 공구 수, 자동 공구교환 및 복합가공 수준에 따라 2축·4축·5축 구성을 검토합니다.";
+  }else{
+    document.getElementById("sizeTitle").textContent="가장 큰 가공물 크기";
+    document.getElementById("sizeHelp").textContent="평소 작업하는 제품 중 가장 큰 크기를 입력하세요.";
+    document.getElementById("sizeXLabel").textContent="가로 X (mm)";
+    document.getElementById("sizeYLabel").textContent="세로 Y (mm)";
+    document.getElementById("sizeX").value=600;
+    document.getElementById("sizeY").value=900;
+    document.querySelector('input[name="job"][value="small"]').checked=true;
+    document.getElementById("optionNote").textContent="※ 실제 소프트웨어 종류와 라이선스, 교육 방식, A축 구성은 가공 제품과 사용 환경 확인 후 확정하는 것을 권장합니다.";
+  }
+}
+
+function recommend(){
+  const machineType=radioValue("machineType");
+  const x=Number(document.getElementById("sizeX").value||0);
+  const y=Number(document.getElementById("sizeY").value||0);
+  const job=radioValue("job");
+  const production=document.getElementById("production").value;
+  const complexity=document.getElementById("complexity").value;
+
+  let product;
+  let why=[];
+
+  if(machineType==="lathe"){
+    const length=x;
+    const diameter=y;
+
+    if(length>1500 || diameter>300){
+      product=PRODUCTS.lathe5;
+      why.push("표준 작업영역 이상의 대형 제품");
+      why.push("실제 제작 가능 범위 별도 확인 필요");
+    }
+    else if(length>1200){
+      product=PRODUCTS.lathe5;
+      why.push("1,200mm 초과 길이");
+    }
+    else if(job==="complex" || complexity==="3d"){
+      product=PRODUCTS.lathe5;
+      why.push("복합 형상·고난도 가공");
+    }
+    else if(job==="multi" || production==="high" || complexity==="mixed"){
+      product=PRODUCTS.lathe4;
+      why.push("공구 자동교환·자동보정 활용");
+    }
+    else{
+      product=PRODUCTS.lathe2;
+      why.push("기본 원통·가구 다리 가공");
+    }
+
+    if(diameter<=300) why.push("Ø300mm 범위");
+    if(length<=1200) why.push("L 1,200mm 범위");
+    if(production==="high") why.push("반복 생산");
+  }else{
+    const maxSide=Math.max(x,y);
+    const minSide=Math.min(x,y);
+
+    if(maxSide>900 || minSide>600){
+      product=PRODUCTS.atc1325;
+      why.push("600×900mm보다 큰 가공물");
+    }
+    else if(production==="high" || job==="furniture"){
+      product=PRODUCTS.atc6090_4;
+      why.push("생산성과 반복가공 비중");
+    }
+    else if(complexity==="3d" || job==="relief"){
+      product=PRODUCTS.atc6090_4;
+      why.push("3D·부조 가공 비중");
+    }
+    else if(production==="medium" || complexity==="mixed"){
+      product=PRODUCTS.atc6090_5;
+      why.push("소형 작업 + ATC 활용");
+    }
+    else{
+      product=PRODUCTS.atc6090a;
+      why.push("소형·샘플 중심 운용");
+    }
+
+    if(product.id!=="atc1325" && x<=600 && y<=900) why.push("600×900mm 범위");
+    if(production==="high") why.push("상시·반복 생산");
+    if(complexity==="3d") why.push("3D 곡면 가공");
+    if(job==="sign") why.push("사인·인테리어 제작");
+  }
+
+  return {product,why,x,y,job,production,complexity,machineType};
+}
+
+function optionRows(){
+  const rows=[];
+  if(document.getElementById("software").checked)
+    rows.push({name:"CAD/CAM 소프트웨어",price:OPTION_PRICES.software});
+  if(document.getElementById("education").checked)
+    rows.push({name:"디지털 목공 교육",price:OPTION_PRICES.education});
+  if(document.getElementById("rotary").checked && radioValue("machineType")==="router")
+    rows.push({name:"A축 로터리 옵션",price:OPTION_PRICES.rotary});
+  if(document.getElementById("support").checked)
+    rows.push({name:"지원사업 도입 상담",price:OPTION_PRICES.support});
+  return rows;
+}
+
+function textJob(v){
+  return ({
+    small:"소품·샘플·소형 부품",
+    furniture:"가구·판재 가공",
+    relief:"부조·3D 조각·아트월",
+    sign:"간판·사인·인테리어",
+    round:"단순 원통·원형 부품",
+    leg:"가구 다리·기둥 제작",
+    multi:"다공정·자동 공구교환",
+    complex:"복합 형상·고난도 가공"
+  })[v]||"-";
+}
+
+function textProduction(v){
+  return ({low:"교육·샘플 중심",medium:"일반 생산",high:"상시·반복 생산"})[v]||"-";
+}
+
+function render(){
+  const r=recommend();
+  const opts=optionRows();
+  const p=r.product;
+  const knownPrices=[p.price,...opts.map(o=>o.price)].filter(v=>typeof v==="number");
+  const hasUnknown=[p.price,...opts.map(o=>o.price)].some(v=>v===null);
+  const subtotal=knownPrices.reduce((a,b)=>a+b,0);
+
+  const sizeText = r.machineType==="lathe"
+    ? `L ${r.x.toLocaleString()} × D ${r.y.toLocaleString()} mm`
+    : `${r.x.toLocaleString()} × ${r.y.toLocaleString()} mm`;
+
+  const typeText = r.machineType==="lathe" ? "CNC 목선반" : "CNC 라우터";
+
+  document.getElementById("resultPanel").innerHTML=`
+    <div class="result-head">
+      <h2>모의 견적 결과</h2>
+      <div class="status">${typeText} 추천</div>
+    </div>
+
+    <div class="machine-card">
+      <small>${p.label}</small>
+      <h3>${p.name}</h3>
+      <p>입력한 가공 조건을 기준으로 가장 먼저 검토할 장비입니다.</p>
+      <div class="reason-list">
+        ${[...p.reasons,...r.why].slice(0,7).map(v=>`<span>${v}</span>`).join("")}
+      </div>
+    </div>
+
+    <div class="summary">
+      <div class="summary-row"><span>장비 종류</span><strong>${typeText}</strong></div>
+      <div class="summary-row"><span>입력 가공 크기</span><strong>${sizeText}</strong></div>
+      <div class="summary-row"><span>주요 작업</span><strong>${textJob(r.job)}</strong></div>
+      <div class="summary-row"><span>운용 목적</span><strong>${textProduction(r.production)}</strong></div>
+      <div class="summary-row"><span>추가 구성</span><strong>${opts.length ? opts.map(o=>o.name).join(" · ") : "기본 장비 구성"}</strong></div>
+    </div>
+
+    <div class="total">
+      <div class="total-label">
+        <span>현재 확인 가능한 예상금액</span>
+        <strong>VAT 별도 기준</strong>
+      </div>
+      <div class="total-price">${subtotal ? won(subtotal) : "가격 상담 필요"}</div>
+      <small>${hasUnknown ? "선택 구성 중 공개 판매가가 없는 항목은 최종 상담 시 금액이 추가됩니다." : "선택한 공개 가격 기준 단순 합산 금액입니다."}</small>
+    </div>
+
+    <div class="quote-lines">
+      <div class="quote-line"><b>${p.name}</b><em>${won(p.price)}</em></div>
+      ${opts.map(o=>`
+        <div class="quote-line">
+          <b>${o.name}</b>
+          <em>${o.price===0 ? "상담 포함" : won(o.price)}</em>
+        </div>
+      `).join("")}
+    </div>
+
+    <div class="warning">
+      본 결과는 제품 선택을 돕기 위한 모의 견적입니다. 실제 견적은 소재, 가공물 크기,
+      전원 환경, 설치 위치, 운송, 공구 구성 및 소프트웨어 라이선스 등에 따라 달라질 수 있습니다.
+    </div>
+
+    <div class="product-links">
+      ${p.url && p.url!=="#" ? `<a class="product-link" href="${p.url}" target="_blank" rel="noopener">추천 장비 상세 보기</a>` : `<span class="product-link">상세페이지 준비 중</span>`}
+      <a class="product-link main" href="https://wkf.ms/3RdYVIA" target="_blank" rel="noopener">실제 견적 문의하기</a>
+    </div>
+  `;
+}
+
+document.querySelectorAll('input[name="machineType"]').forEach(el=>{
+  el.addEventListener("change",()=>{
+    updateMachineUI();
+    if(!document.querySelector("#resultPanel .empty")) render();
+  });
+});
+
+document.getElementById("calcBtn").addEventListener("click",render);
+
+document.getElementById("resetBtn").addEventListener("click",()=>{
+  document.querySelector('input[name="machineType"][value="router"]').checked=true;
+  updateMachineUI();
+  document.getElementById("production").value="medium";
+  document.getElementById("complexity").value="mixed";
+  ["software","education","rotary","support"].forEach(id=>document.getElementById(id).checked=false);
+  document.getElementById("resultPanel").innerHTML=`
+    <div class="empty">
+      <div><strong>조건을 입력해 주세요.</strong>입력한 작업 조건에 맞춰<br>장비와 옵션 구성을 추천합니다.</div>
+    </div>`;
+});
+
+document.querySelectorAll("input,select").forEach(el=>{
+  el.addEventListener("change",()=>{
+    if(!document.querySelector("#resultPanel .empty")) render();
+  });
+});
 </script>
 </body>
 </html>
